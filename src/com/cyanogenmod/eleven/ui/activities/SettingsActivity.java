@@ -16,6 +16,8 @@ package com.cyanogenmod.eleven.ui.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -27,6 +29,8 @@ import android.view.MenuItem;
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.cache.ImageFetcher;
 import com.cyanogenmod.eleven.utils.ArtworkProvider;
+import com.cyanogenmod.eleven.utils.MusicUtils;
+import com.cyanogenmod.eleven.utils.PreferenceUtils;
 
 /**
  * Settings.
@@ -34,7 +38,7 @@ import com.cyanogenmod.eleven.utils.ArtworkProvider;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 @SuppressWarnings("deprecation")
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener{
 
     /**
      * {@inheritDoc}
@@ -61,6 +65,8 @@ public class SettingsActivity extends PreferenceActivity {
 
         // Removes the cache entries
         deleteCache();
+
+        PreferenceUtils.getInstance(this).setOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -104,5 +110,13 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+             String key) {
+        if(key.equals(PreferenceUtils.SHAKE_TO_PLAY)){
+            MusicUtils.setShakeToPlayEnabled(sharedPreferences.getBoolean(key, false));
+        }
     }
 }
